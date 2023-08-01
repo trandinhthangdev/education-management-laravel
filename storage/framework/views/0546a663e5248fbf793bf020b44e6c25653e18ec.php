@@ -1,0 +1,178 @@
+<?php $__env->startSection('title', 'Student Information'); ?>
+
+<?php $__env->startSection('content'); ?>
+<section class="mt-2">
+	<div class="container">
+	    <ol class="breadcrumb font-weight-bolder">
+	        <li class="breadcrumb-item">
+	        	<img src="<?php echo e(asset('uploads/images/pages/logo.png')); ?>" alt="" width="15"> 
+	        	Management Education
+	        </li>
+	        <li class="breadcrumb-item active">Student Information</li>
+	    </ol>
+	</div>
+	<div class="container bg-dark">
+    	<div class="student-card m-3 text-dark text-light">
+    		<div class="row">
+    			<div class="col-12">
+    				<button class="btn btn-success m-2 float-right" data-toggle="modal" data-target="#update-info" data-id="<?php echo e($student->id); ?>" id="update-info-btn"><span><i class="fa fa-edit"></i></span> Update Info</button>	
+    			</div>
+    		</div>
+			<div class="card bg-dark">
+			    <img class="card-img-top w-25 h-50 m-3 img-thumbnail" src="uploads/images/students/<?php echo e($student->image); ?>">
+			    <div class="dropdown-divider"></div>
+			    <div class="card-body text-light">
+			        <h4 class="font-weight-bolder">Name : <span class="font-weight-normal font-italic"><?php echo e($student->name); ?></span></h4>
+			        <h4 class="font-weight-bolder">Email : <span class="font-weight-normal font-italic"><?php echo e(Auth::user()->email); ?></span></h4>
+					<h4 class="font-weight-bolder">Birthday : 
+						<?php
+						if($student->birthday != null)
+						{
+							$birthday = date_create($student->birthday);
+            	     		$birthday = date_format($birthday,"d/m/Y");
+						}
+						else
+						{
+							$birthday = '';
+						}
+						?>
+						<span class="font-weight-normal font-italic"><?php echo e($birthday); ?></span>
+					</h4>
+					<h4 class="font-weight-bolder">Student Code  : <span class="font-weight-normal font-italic"><?php echo e($student->student_code); ?></span></h4>
+					<h4 class="font-weight-bolder">Sex : 
+						<span class="font-weight-normal font-italic">
+							<?php echo e(($student->sex) ? 'Male' : ''); ?>
+
+							<?php echo e(($student->sex == '0') ? 'Female' : ''); ?>
+
+						</span>
+					</h4>
+					<h4 class="font-weight-bolder">District : <span class="font-weight-normal font-italic"><?php echo e($student->district); ?></span></h4>
+					<h4 class="font-weight-bolder">Province : <span class="font-weight-normal font-italic"><?php echo e($student->province); ?></span></h4>
+					<h4 class="font-weight-bolder">Country : <span class="font-weight-normal font-italic"><?php echo e($student->country); ?></span></h4>
+			    </div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- The Modal Update-Info -->
+<div class="modal font-weight-bolder" id="update-info">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Update Infomation Student</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form id="update-info-form">
+				    <div class="form-group">
+				        <label for="name">Name :</label>
+				        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name ...">
+				    </div>
+				    <div class="form-group">
+				        <label for="image">Image :</label>
+				        <input type="file" class="form-control-file" id="image" accept="image/*" name="image">
+				        <img class="img-thumbnail mt-2" style="width: 50px;" src="uploads/images/students/<?= $student->image ?>">
+				    </div>
+				    <div class="form-group">
+				        <label for="email">Email :</label>
+				        <input type="email" class="form-control" id="email" readonly>
+				    </div>
+				    <div class="form-group">
+				        <label for="name">Birthday :</label>
+				        <input type="date" class="form-control" name="birthday" id="birthday">
+				    </div>
+				    <div class="form-group">
+				        <label for="email">Student Code :</label>
+				        <input type="text" class="form-control" id="student_code" readonly>
+				    </div>
+				    <div class="form-group">
+				        <label for="name">Sex :</label>
+				       	<select class="form-control" name="sex" id="sex">
+				       		<option value="">Sex ...</option>
+				       		<option value="1">Male</option>
+				       		<option value="0">Female</option>
+				       	</select>
+				    </div>
+				    <div class="form-group">
+				        <label for="district">District :</label>
+				        <input type="text" class="form-control" name="district" id="district" placeholder="Enter district ...">
+				    </div>
+				    <div class="form-group">
+				        <label for="province">Province :</label>
+				        <input type="text" class="form-control" name="province" id="province" placeholder="Enter province ...">
+				    </div>
+				    <div class="form-group">
+				        <label for="country">Country :</label>
+				        <input type="text" class="form-control" name="country" id="country" placeholder="Enter country ...">
+				    </div>
+				    <button type="submit" class="btn btn-primary" id="update-info-submit">Save</button>
+				</form>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('script'); ?>
+	<script type="text/javascript">
+		$.ajaxSetup({
+		    headers: {
+		        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+		    }
+		});
+
+		$(document).ready(function(){
+			$(document).on('click', '#update-info-btn', function(){
+				var id = $('#update-info-btn').data('id');
+				console.log(id);
+				$.ajax({
+					url : 'student/student-information/' + id + '/edit',
+					dataType : 'json',
+					type : 'GET',
+					success : function(result){
+						console.log(result);
+						$('#name').val(result.name);
+						$('#email').val(result.email);
+						$('#birthday').val(result.birthday);
+						$('#student_code').val(result.student_code);
+						$('#sex').val(result.sex);
+						$('#district').val(result.district);
+						$('#province').val(result.province);
+						$('#country').val(result.country);
+
+						$('#update-info-form').on('submit', function(event){
+							event.preventDefault();
+							$.ajax({
+								url : 'student/update-student-information/' + id,
+								data: new FormData(this),
+								type: 'POST',
+					            dataType: 'json',
+					            contentType: false,
+					            cache: false,
+					            processData:false,
+								success : function(result){
+									toastr.success(result.response, 'Response');
+									setTimeout("location.reload(true);",500);
+								} 
+							});
+						});
+					}
+				});
+			});
+		});
+	</script>
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('student.layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>
